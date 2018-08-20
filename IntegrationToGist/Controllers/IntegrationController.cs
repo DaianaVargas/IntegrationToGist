@@ -32,7 +32,7 @@ namespace IntegrationToGist.Controllers
         // GET api/values
         [AcceptVerbs("GET")]
         [Route("IntegrationToGist")]
-        public async Task<JArray> Get()
+        public async Task<IHttpActionResult> Get()
         {
             try
             {
@@ -40,11 +40,11 @@ namespace IntegrationToGist.Controllers
                 var uri = new Uri(string.Format("https://api.github.com/gists/{0}/comments", this.Client._gistID));
                 var result = await this.Client.ListGistComments(uri);
 
-                return result;
+                return Ok(result);
             }
             catch (Exception e)
             {
-                return null;
+                return InternalServerError(e);
             }
         }
 
@@ -53,7 +53,7 @@ namespace IntegrationToGist.Controllers
         /// </summary>
         [AcceptVerbs("GET")]
         [Route("IntegrationToGist/{gistID}")]
-        public async Task<JArray> Get(string gistID)
+        public async Task<IHttpActionResult> Get(string gistID)
         {
             try
             {
@@ -61,12 +61,12 @@ namespace IntegrationToGist.Controllers
                 var uri = new Uri(string.Format("https://api.github.com/gists/{0}/comments", gistID));
                 var result = await this.Client.ListGistComments(uri);
 
-                return result;
+                return Ok(result);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                return null;
-            }            
+                return InternalServerError(e);
+            }           
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace IntegrationToGist.Controllers
         // POST api/values
         [AcceptVerbs("POST")]
         [Route("IntegrationToGist/{description}/{uploadFile}/{extensionToUploadFile}")]
-        public async Task Post(string description, string uploadFile, string extensionToUploadFile)
+        public async Task<IHttpActionResult> Post(string description, string uploadFile, string extensionToUploadFile)
         {
             try
             {
@@ -83,9 +83,12 @@ namespace IntegrationToGist.Controllers
                 await this.Client.Authorize();                
                 await this.Client.CreateAGist(description, true, uploadFile, extensionToUploadFile);
 
+                return Ok();
+
             }
             catch (Exception e)
             {
+                return InternalServerError(e);
             }
         }
 

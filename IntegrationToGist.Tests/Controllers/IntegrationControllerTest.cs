@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Web.Http.Results;
 using IntegrationToGist.Controllers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json.Linq;
 
 namespace IntegrationToGist.Tests.Controllers
 {
@@ -15,11 +17,11 @@ namespace IntegrationToGist.Tests.Controllers
             IntegrationController controller = new IntegrationController();
 
             // Agir
-            var result = await controller.Get();
+            var result = await controller.Get() as OkNegotiatedContentResult<JArray>;
 
             // Declarar
             Assert.IsNotNull(result);
-            Assert.IsTrue(result.Count > 0);
+            Assert.IsTrue(result.Content.Count > 0);
         }
 
         [TestMethod]
@@ -29,11 +31,11 @@ namespace IntegrationToGist.Tests.Controllers
             IntegrationController controller = new IntegrationController();
 
             // Agir
-            var result = await controller.Get("10b25f07d5cd01a72f66158b50acce73");
+            var result = await controller.Get("10b25f07d5cd01a72f66158b50acce73") as OkNegotiatedContentResult<JArray>;
 
             // Declarar
             Assert.IsNotNull(result);
-            Assert.IsTrue(result.Count > 0);
+            Assert.IsTrue(result.Content.Count > 0);
         }
 
         [TestMethod]
