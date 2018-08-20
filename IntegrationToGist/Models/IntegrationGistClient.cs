@@ -1,15 +1,12 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace IntegrationToGist.Models
 {
@@ -51,7 +48,6 @@ namespace IntegrationToGist.Models
             this.Initialize();
 
             var authorizeUri = new Uri(string.Format("https://api.github.com/login/oauth/authorize?client_id={0}&scope={1}", this._clientId, "gist"));
-            //var authorizeUri = new Uri(string.Format("https://github.com/login/oauth/authorize?client_id={0}&redirect_uri={1}&scope={2}&state={3}&allow_signup={4}", this._clientId, "gist"));
             using (HttpClient httpClient1 = this.CreateHttpClient(false))
             {
                 ////var response1 = await httpClient1.GetAsync(authorizeUri, HttpCompletionOption.ResponseContentRead, this.cancellationTS.Token);
@@ -63,20 +59,21 @@ namespace IntegrationToGist.Models
                 {
                     string responseString1 = await response1.Content.ReadAsStringAsync();
 
-                    string authCode = null;
+                    string authCode = null; // recebe retorno da autorização no Gist
 
                     if (!string.IsNullOrEmpty(authCode) && authCode.Contains("code"))
+                    {
                         authCode = Regex.Split(authorizeUri.AbsoluteUri, "code=")[1];
 
-                    var requestUri = new Uri(string.Format("https://github.com/login/oauth/access_token?client_id={0}&client_secret={1}&code={2}", this._clientId, this._clientSecret, authCode));
-                    using (HttpClient httpClient = this.CreateHttpClient(true))
-                    {
-                        var response = await httpClient.PostAsync(requestUri, null, this.cancellationTS.Token);
-                        string responseString = await response.EnsureSuccessStatusCode().Content.ReadAsStringAsync();
-                        var json = JsonConvert.DeserializeObject<JObject>(responseString);
-                        //object json = DinamicJson.Parse(responseString);
-                        this._accessToken = (string)((dynamic)json).access_token;
-                    }
+                        var requestUri = new Uri(string.Format("https://github.com/login/oauth/access_token?client_id={0}&client_secret={1}&code={2}", this._clientId, this._clientSecret, authCode));
+                        using (HttpClient httpClient = this.CreateHttpClient(true))
+                        {
+                            var response = await httpClient.PostAsync(requestUri, null, this.cancellationTS.Token);
+                            string responseString = await response.EnsureSuccessStatusCode().Content.ReadAsStringAsync();
+                            var json = JsonConvert.DeserializeObject<JObject>(responseString);
+                            this._accessToken = (string)((dynamic)json).access_token;
+                        }
+                    }                    
                 }
             }
         }
@@ -130,40 +127,12 @@ namespace IntegrationToGist.Models
 
             return client;
         }
-                
-        //private static GistObject DynamicToGistObject(dynamic json)
-        //{
-        //    var gist = (GistObject)json;
-        //    var files = ((DinamicJson)json.files).DeserializeMembers(member =>
-        //      new Models.File()
-        //      {
-        //          filename = member.filename,
-        //          raw_url = member.raw_url,
-        //          size = member.size
-        //      });
-
-        //    gist.files = new Files(files.ToArray());
-        //    return gist;
-        //}
-
-        private static string MakeCreateContent(string _description, bool _isPublic, string uploadFile, string extensionToUploadFile)
+          
+        private string MakeCreateContent(string _description, bool _isPublic, string uploadFile, string extensionToUploadFile)
         {
-            //dynamic _result = new DinamicJson();
-            //dynamic _file = new DinamicJson();
-            //_result.description = _description;
-            //_result.@public = _isPublic.ToString().ToLower();
-            //_result.files = new { };
-            //foreach (var fileContent in fileContentCollection)
-            //{
-            //    _result.files[fileContent.Item1] = new { filename = fileContent.Item1, content = fileContent.Item2 };
-            //}
-            //return _result.ToString();
-
             var gistItem = new GistItem(_description);
             gistItem.Files.Add(new Models.File(string.Format("{0}.{1}", uploadFile, extensionToUploadFile), string.Empty));
             return JsonConvert.SerializeObject(gistItem);
-            //var json = new JObject(gistItem);
-            //return json.ToString();
         }
 
         #endregion
