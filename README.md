@@ -12,19 +12,19 @@ O projeto foi desenvolvido no Visual Studio Community 2017. Para utilizar a apli
 
 As requisições a serem executadas na API Integração Gist são as seguintes:
 
-* POST que cria um Gist:
+* POST que cria um Gist (onde deve ser informada uma descrição para o Gist, o nome do arquivo e sua extensão):
 ```
-http://localhost:57796/api/IntegrationToGist/{números do CPF}
+http://localhost:57796/api/IntegrationToGist/{descrição}/{nome}/{extensão}
 ```
 
 * GET que retorna todos os comentários de um Gist padrão definido no código-fonte (Fields na classe IntegrationClient):
 ```
-http://localhost:57796/IntegrationToGist
+http://localhost:57796/api/IntegrationToGist
 ```
 
 * GET que retorna todos os comentários de um Gist informado pelo usuário:
 ```
-http://localhost:57796/IntegrationToGist/{ID do Gist}
+http://localhost:57796/api/IntegrationToGist/{ID do Gist}
 ```
 
 
