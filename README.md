@@ -3,7 +3,7 @@
 Web API para criar um Gist e listar comentários de um Gist.
 
 
-## Iniciando ...
+## Geral
 
 O projeto foi desenvolvido no Visual Studio Community 2017. Para utilizar a aplicação, a mesma deve ser compilada local e deve ser utilizado o [Postman](https://www.getpostman.com/apps) para realizar a execução dos endpoints.
 
